@@ -9,12 +9,16 @@ function toPath(file) {
   return looper.removeExtension(path.basename(file.$name));
 }
 
-module.exports = looper(function({ loopOnType, loopContent }) {
+module.exports = looper(function({ createIndex, loopOnType, loopContent }) {
+  createIndex('feed');
 
-  loopOnType('page', function(file) {
+  loopOnType('page', function(file, { addIndex }) {
     file.fullSlug = file.slugName || `${toPath(file)}/`;
     if (file.layout === 'home.njk') {
       file.fullSlug = '';
+    }
+    if (path.extname(file.fullSlug) === '') {
+      addIndex('feed', 'all');
     }
   });
 
