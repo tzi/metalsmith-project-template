@@ -1,5 +1,6 @@
+const cpx = require('cpx');
 const Metalsmith = require('metalsmith');
-const layouts = require('metalsmith-layouts');
+const layouts = require('@metalsmith/layouts');
 const debug = require('metalsmith-debug');
 const remarkTextr = require('remark-textr');
 
@@ -9,27 +10,26 @@ const core = require('./core');
 
 const layoutFolder = __dirname + '/layout';
 
+cpx.copySync('src/static/**/*', 'docs', { clean: true });
+cpx.copySync('src/static/*', 'docs');
+
 Metalsmith(__dirname)
   .metadata({})
   .source('../content')
   .destination('../docs')
   .clean(false)
-  .use(
-    remark([
-      [remarkTextr, { plugins: [typo] }]
-    ])
-  )
+  .use(remark([[remarkTextr, { plugins: [typo] }]]))
   .use(core)
   .use(debug())
   .use(
     layouts({
       directory: layoutFolder,
       engineOptions: {
-        path: layoutFolder
-      }
+        path: layoutFolder,
+      },
     })
   )
-  .build(function(err) {
+  .build(function (err) {
     if (err) {
       throw err;
     }
